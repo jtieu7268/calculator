@@ -50,45 +50,37 @@ reset();
 
 const numberButtons = document.querySelectorAll(".calculator > .row > .number");
 for (let button of numberButtons) {
-    button.addEventListener('click', displayNumberPress);
+    button.addEventListener('click', (event) => {
+        let numberPressed = event.target.textContent;
+        if (operator === null) {
+            // replace display with entered number rather than leave a leading 0
+            num1 = isNum1Result ? numberPressed : num1 + numberPressed;
+            display.value = num1;
+            isNum1Result = false;
+        } else {
+            // prevent the display from adding a leading zero after an operator
+            num2 = num2 === null ? numberPressed : num2 + numberPressed;
+            display.value = num2;
+        }
+    });
 }
 
 const operatorButtons = document.querySelectorAll(".calculator > .row > .operator");
 for (let button of operatorButtons) {
-    button.addEventListener('click', displayOperatorPress);
+    button.addEventListener('click', (event) => {
+        let operatorPressed = event.target.textContent;
+        if (operator !== null && num2 !== null) {
+            num1 = operate(operator, num1, num2);
+            num2 = null;
+            display.value = num1;
+        } 
+        operator = operatorPressed;
+    }
+    );
 }
 
 const equalsButton = document.querySelector(".calculator > .row > .equals");
-equalsButton.addEventListener('click', displayEvaluation);
-
-const clearButton = document.querySelector(".calculator > .row > .clear");
-clearButton.addEventListener('click', reset);
-
-function displayNumberPress (event) {
-    let numberPressed = event.target.textContent;
-    if (operator === null) {
-        // replace display with entered number rather than leave a leading 0
-        num1 = isNum1Result ? numberPressed : num1 + numberPressed;
-        display.value = num1;
-        isNum1Result = false;
-    } else {
-        // prevent the display from adding a leading zero after an operator
-        num2 = num2 === null ? numberPressed : num2 + numberPressed;
-        display.value = num2;
-    }
-}
-
-function displayOperatorPress (event) {
-    let operatorPressed = event.target.textContent;
-    if (operator !== null && num2 !== null) {
-        num1 = operate(operator, num1, num2);
-        num2 = null;
-        display.value = num1;
-    } 
-    operator = operatorPressed;
-}
-
-function displayEvaluation () {
+equalsButton.addEventListener('click', () => {
     if (operator !== null && num2 !== null) {
         num1 = operate(operator, num1, num2);
         num2 = null;
@@ -96,7 +88,10 @@ function displayEvaluation () {
         display.value = num1;
         isNum1Result = true;
     }
-}
+});
+
+const clearButton = document.querySelector(".calculator > .row > .clear");
+clearButton.addEventListener('click', reset);
 
 function reset () {
     num1 = "0";
