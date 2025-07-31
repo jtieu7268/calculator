@@ -39,6 +39,12 @@ function operate (operator_str, num1, num2) {
 }
 
 let operator, num1, num2;
+/* isNumResult:
+    used to determine whether to append pressed number to num1 or replace num1 with pressed number. 
+    this allows user to press a new digit to clear a result and start a new calculation.
+    if user wants to use result further, they can proceed by selecting an operator after the result.
+*/
+let isNum1Result = true;
 const display = document.querySelector(".calculator > .display > output");
 reset();
 
@@ -62,8 +68,9 @@ function displayNumberPress (event) {
     let numberPressed = event.target.textContent;
     if (operator === null) {
         // replace display with entered number rather than leave a leading 0
-        num1 = num1 === "0" ? numberPressed : num1 + numberPressed;
+        num1 = isNum1Result ? numberPressed : num1 + numberPressed;
         display.value = num1;
+        isNum1Result = false;
     } else {
         // prevent the display from adding a leading zero after an operator
         num2 = num2 === null ? numberPressed : num2 + numberPressed;
@@ -87,6 +94,7 @@ function displayEvaluation () {
         num2 = null;
         operator = null;
         display.value = num1;
+        isNum1Result = true;
     }
 }
 
