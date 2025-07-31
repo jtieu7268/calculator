@@ -38,8 +38,9 @@ function operate (operator_str, num1, num2) {
     return operator_fun(Number(num1), Number(num2));
 }
 
-let num1 = 0;
-let num2, operator;
+let num1 = "0";
+let operator = null;
+let num2 = null;
 
 const display = document.querySelector(".calculator > .display > output");
 display.value = num1;
@@ -59,56 +60,32 @@ equalsButton.addEventListener('click', displayEvaluation);
 
 function displayNumberPress (event) {
     let numberPressed = event.target.textContent;
-    if (display.value === "0") {
+    if (operator === null) {
         // replace display with entered number rather than leave a leading 0
-        display.value = numberPressed;
-    } else if (!(endsWithOperator(display.value) && numberPressed === "0")) {
+        num1 = num1 === "0" ? numberPressed : num1 + numberPressed;
+        display.value = num1;
+    } else {
         // prevent the display from adding a leading zero after an operator
-        display.value += numberPressed;
+        num2 = num2 === null ? numberPressed : num2 + numberPressed;
+        display.value = num2;
     }
 }
 
 function displayOperatorPress (event) {
-    if (endsWithOperator(display.value)) {
-        if (operator !== event.target.textContent) {
-            operator = event.target.textContent;
-            display.value = display.value.slice(0,-1) + operator;
-        }
-    } else {
-        if (containsOperator(display.value)) {
-            num1 = evalExpressionStr(display.value);
-            display.value = num1;
-        } else {
-            num1 = display.value;
-            operator = event.target.textContent;
-            display.value += operator;
-        }
-    }
+    let operatorPressed = event.target.textContent;
+    if (operator !== null && num2 !== null) {
+        num1 = operate(operator, num1, num2);
+        num2 = null;
+        display.value = num1;
+    } 
+    operator = operatorPressed;
 }
 
 function displayEvaluation () {
-    if (containsOperator(display.value) && !endsWithOperator(display.value)) {
-        num1 = evalExpressionStr(display.value);
+    if (operator !== null && num2 !== null) {
+        num1 = operate(operator, num1, num2);
+        num2 = null;
+        operator = null;
         display.value = num1;
     }
-}
-
-function containsOperator (str) {
-    return str.includes(ADD) 
-    || (str.substring(1).includes(SUB))
-    || str.includes(MUL) 
-    || str.includes(DIV);
-}
-
-function endsWithOperator (str) {
-    return str.endsWith(ADD) 
-    || str.endsWith(SUB) 
-    || str.endsWith(MUL) 
-    || str.endsWith(DIV);
-}
-
-function evalExpressionStr (str) {
-    console.log(str.split(operator));
-    let [num1, num2] = str.split(operator);
-    return operate(operator, num1, num2);
 }
