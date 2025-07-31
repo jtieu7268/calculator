@@ -38,7 +38,7 @@ function operate (operator_str, num1, num2) {
     return operator_fun(Number(num1), Number(num2));
 }
 
-let operator, num1, num2, isNum1Result;
+let operator, num1, num2, isNum1Result, decimalPressed;
 /* isNumResult:
     used to determine whether to append pressed number to num1 or replace num1 with pressed number. 
     this allows user to press a new digit to clear a result and start a new calculation.
@@ -53,7 +53,7 @@ for (let button of numberButtons) {
         let numberPressed = event.target.textContent;
         if (operator === null) {
             // replace display with entered number rather than leave a leading 0
-            num1 = (num1 === "0" || isNum1Result)? numberPressed : num1 + numberPressed;
+            num1 = (num1 === "0" || isNum1Result) ? numberPressed : num1 + numberPressed;
             display.value = num1;
             isNum1Result = false;
         } else {
@@ -74,6 +74,7 @@ for (let button of operatorButtons) {
             display.value = num1;
         } 
         operator = operatorPressed;
+        decimalPressed = false;
     });
 }
 
@@ -85,11 +86,40 @@ equalsButton.addEventListener('click', () => {
         operator = null;
         display.value = num1;
         isNum1Result = true;
+        decimalPressed = false;
     }
 });
 
 const clearButton = document.querySelector(".calculator > .row > .clear");
 clearButton.addEventListener('click', reset);
+
+const decimalButton = document.querySelector(".calculator > .row > .decimal");
+decimalButton.addEventListener('click', () => {
+    if (!decimalPressed) {
+        decimalPressed = true;
+        if (num1 !== null && operator !== null && num2 !== null) {
+            num2 += ".";
+            display.value = num2;
+        } else if (num1 !== null && operator !== null) {
+            num2 = "0.";
+            display.value = num2;
+        } else if (!isNum1Result) {
+            num1 += ".";
+            display.value = num1;
+        } else {
+            num1 = "0.";
+            display.value = num1;
+            isNum1Result = false;
+        }
+    }
+})
+
+const buttons = document.querySelectorAll("button");
+for (const button of buttons) {
+    button.addEventListener('click', () => {
+        console.log(`num1: ${num1}, operator: : ${operator}, num2: ${num2}`);
+    })
+}
 
 function reset () {
     num1 = "0";
@@ -97,4 +127,5 @@ function reset () {
     num2 = null;
     display.value = num1;
     isNum1Result = true;
+    decimalPressed = false;
 }
