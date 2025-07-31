@@ -38,12 +38,9 @@ function operate (operator_str, num1, num2) {
     return operator_fun(Number(num1), Number(num2));
 }
 
-let num1 = "0";
-let operator = null;
-let num2 = null;
-
+let operator, num1, num2;
 const display = document.querySelector(".calculator > .display > output");
-display.value = num1;
+reset();
 
 const numberButtons = document.querySelectorAll(".calculator > .row > .number");
 for (let button of numberButtons) {
@@ -57,6 +54,9 @@ for (let button of operatorButtons) {
 
 const equalsButton = document.querySelector(".calculator > .row > .equals");
 equalsButton.addEventListener('click', displayEvaluation);
+
+const clearButton = document.querySelector(".calculator > .row > .clear");
+clearButton.addEventListener('click', reset);
 
 function displayNumberPress (event) {
     let numberPressed = event.target.textContent;
@@ -88,4 +88,11 @@ function displayEvaluation () {
         operator = null;
         display.value = num1;
     }
+}
+
+function reset () {
+    num1 = "0";
+    operator = null;
+    num2 = null;
+    display.value = num1;
 }
